@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container wide">
+        <h1>All Tickets</h1>
+        <form method="GET" class="filter-form">
+            <select name="status">
+                <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Statuses</option>
+                <option value="open" {% if status_filter=='open' %}selected{% endif %}>Open</option>
+                <option value="in progress" {% if status_filter=='in progress' %}selected{% endif %}>In Progress</option>
+                <option value="resolved" {% if status_filter=='resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+            <select name="priority">
+                <option value="all" {% if priority_filter=='all' %}selected{% endif %}>All Priorities</option>
+                <option value="low" {% if priority_filter=='low' %}selected{% endif %}>Low</option>
+                <option value="medium" {% if priority_filter=='medium' %}selected{% endif %}>Medium</option>
+                <option value="high" {% if priority_filter=='high' %}selected{% endif %}>High</option>
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+        {% if tickets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Submitted By</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket['id'] }}</td>
+                    <td>{{ ticket['title'] }}</td>
+                    <td>{{ ticket['created_by'] }}</td>
+                    <td class="priority-{{ ticket['priority'] }}">{{ ticket['priority'] }}</td>
+                    <td class="status-{{ ticket['status'].replace(' ', '-') }}">{{ ticket['status'] }}</td>
+                    <td>{{ ticket['date'] }}</td>
+                    <td>
+                        <form method="POST" action="/admin/update/{{ ticket['id'] }}">
+                            <select name="status">
+                                <option value="open">Open</option>
+                                <option value="in progress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No tickets found.</p>
+        {% endif %}
+        <br>
+        <a href="/admin">Back to Admin Dashboard</a>
+    </div>
+</body>
+</html>

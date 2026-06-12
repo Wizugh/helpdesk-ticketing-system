@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container wide">
+        <h1>My Tickets</h1>
+        {% if tickets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket['id'] }}</td>
+                    <td>{{ ticket['title'] }}</td>
+                    <td class="priority-{{ ticket['priority'] }}">{{ ticket['priority'] }}</td>
+                    <td class="status-{{ ticket['status'] }}">{{ ticket['status'] }}</td>
+                    <td>{{ ticket['date'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No tickets submitted yet.</p>
+        {% endif %}
+        <br>
+        <a href="/submit" class="btn">Submit New Ticket</a>
+        <br><br>
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</body>
+</html>
