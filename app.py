@@ -151,6 +151,19 @@ def admin_tickets():
                           status_filter=status_filter,
                           priority_filter=priority_filter)
 
+@app.route('/ticket/<int:ticket_id>')
+def ticket_detail(ticket_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    conn = get_db()
+    ticket = conn.execute('SELECT * FROM tickets WHERE id = ?', (ticket_id,)).fetchone()
+    conn.close()
+    if ticket is None:
+        return 'Ticket not found', 404
+    if session['role'] != 'admin' and ticket['created_by'] != session['user']:
+        return 'Access denied', 403
+    return render_template('ticket_detail.html', ticket=ticket)
+
 @app.route('/admin/update/<int:ticket_id>', methods=['POST'])
 def update_ticket(ticket_id):
     if 'user' not in session or session['role'] != 'admin':

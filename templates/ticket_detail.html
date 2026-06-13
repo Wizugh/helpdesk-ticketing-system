@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Ticket #{{ ticket['id'] }}{% endblock %}
+
+{% block content %}
+<div class="container wide">
+    <p class="ticket-ref">Ticket Reference: <strong>#{{ '%04d'|format(ticket['id']) }}</strong></p>
+    <h1>{{ ticket['title'] }}</h1>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <h2>Details</h2>
+            <table class="detail-table">
+                <tr>
+                    <th>Status</th>
+                    <td class="status-{{ ticket['status'].replace(' ', '-') }}">{{ ticket['status'] }}</td>
+                </tr>
+                <tr>
+                    <th>Priority</th>
+                    <td class="priority-{{ ticket['priority'] }}">{{ ticket['priority'] }}</td>
+                </tr>
+                <tr>
+                    <th>Submitted By</th>
+                    <td>{{ ticket['created_by'] }}</td>
+                </tr>
+                <tr>
+                    <th>Date Submitted</th>
+                    <td>{{ ticket['date'] }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="detail-card">
+            <h2>Description</h2>
+            <p class="description-box">{{ ticket['description'] }}</p>
+        </div>
+    </div>
+
+    <br>
+    {% if session['role'] == 'admin' %}
+        <a href="/admin/tickets" class="btn-secondary">Back to All Tickets</a>
+    {% else %}
+        <a href="/mytickets" class="btn-secondary">Back to My Tickets</a>
+    {% endif %}
+</div>
+{% endblock %}

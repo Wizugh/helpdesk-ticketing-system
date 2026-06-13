@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Helpdesk{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% if session.get('user') %}
+    <nav class="topnav">
+        <span class="topnav-brand">Helpdesk Portal</span>
+        <div class="topnav-right">
+            <span class="topnav-user">{{ session['user'] }}</span>
+            {% if session['role'] == 'admin' %}
+                <a href="/admin">Dashboard</a>
+            {% else %}
+                <a href="/dashboard">Dashboard</a>
+            {% endif %}
+            <a href="/logout" class="topnav-logout">Logout</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

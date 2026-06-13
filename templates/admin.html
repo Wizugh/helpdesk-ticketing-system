@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container wide">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome, {{ username }}</p>
-        <a href="/admin/tickets" class="btn">Manage All Tickets</a>
-        <br><br>
-        <a href="/logout">Logout</a>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container wide">
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, {{ username }}</p>
+    <a href="/admin/tickets" class="btn">Manage All Tickets</a>
+</div>
+{% endblock %}
