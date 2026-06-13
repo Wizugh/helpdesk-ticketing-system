@@ -26,6 +26,10 @@
                     <th>Date Submitted</th>
                     <td>{{ ticket['date'] }}</td>
                 </tr>
+                <tr>
+                    <th>Assigned To</th>
+                    <td>{{ ticket['assigned_to'] or 'Unassigned' }}</td>
+                </tr>
             </table>
         </div>
 

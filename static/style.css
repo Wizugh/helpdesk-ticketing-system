@@ -241,3 +241,16 @@ tr:hover { background-color: #f9f9f9; }
     white-space: pre-wrap;
     margin: 0;
 }
+
+.assign-input {
+    width: 120px;
+    padding: 6px;
+    margin-bottom: 0;
+    font-size: 13px;
+}
+
+.assigned-cell {
+    color: #555;
+    font-size: 13px;
+    font-style: italic;
+}

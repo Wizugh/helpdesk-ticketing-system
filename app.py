@@ -35,7 +35,17 @@ def init_db():
     conn.commit()
     conn.close()
 
+def migrate_db():
+    conn = get_db()
+    try:
+        conn.execute('ALTER TABLE tickets ADD COLUMN assigned_to TEXT DEFAULT NULL')
+        conn.commit()
+    except:
+        pass
+    conn.close()
+
 init_db()
+migrate_db()
 
 @app.route('/')
 def home():
@@ -169,9 +179,10 @@ def update_ticket(ticket_id):
     if 'user' not in session or session['role'] != 'admin':
         return redirect(url_for('login'))
     new_status = request.form['status']
+    assigned_to = request.form.get('assigned_to', '').strip() or None
     conn = get_db()
-    conn.execute('UPDATE tickets SET status = ? WHERE id = ?',
-                (new_status, ticket_id))
+    conn.execute('UPDATE tickets SET status = ?, assigned_to = ? WHERE id = ?',
+                (new_status, assigned_to, ticket_id))
     conn.commit()
     conn.close()
     return redirect(url_for('admin_tickets'))

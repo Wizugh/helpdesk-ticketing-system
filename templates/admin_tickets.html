@@ -29,6 +29,7 @@
                 <th>Priority</th>
                 <th>Status</th>
                 <th>Date</th>
+                <th>Assigned To</th>
                 <th>Update</th>
             </tr>
         </thead>
@@ -41,13 +42,18 @@
                 <td class="priority-{{ ticket['priority'] }}">{{ ticket['priority'] }}</td>
                 <td class="status-{{ ticket['status'].replace(' ', '-') }}">{{ ticket['status'] }}</td>
                 <td>{{ ticket['date'] }}</td>
+                <td class="assigned-cell">{{ ticket['assigned_to'] or 'Unassigned' }}</td>
                 <td>
                     <form method="POST" action="/admin/update/{{ ticket['id'] }}">
                         <select name="status">
-                            <option value="open">Open</option>
-                            <option value="in progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
+                            <option value="open" {% if ticket['status']=='open' %}selected{% endif %}>Open</option>
+                            <option value="in progress" {% if ticket['status']=='in progress' %}selected{% endif %}>In Progress</option>
+                            <option value="resolved" {% if ticket['status']=='resolved' %}selected{% endif %}>Resolved</option>
                         </select>
+                        <input type="text" name="assigned_to"
+                               value="{{ ticket['assigned_to'] or '' }}"
+                               placeholder="Assign to agent"
+                               class="assign-input">
                         <button type="submit">Update</button>
                     </form>
                 </td>
