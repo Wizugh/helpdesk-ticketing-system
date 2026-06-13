@@ -254,3 +254,80 @@ tr:hover { background-color: #f9f9f9; }
     font-size: 13px;
     font-style: italic;
 }
+
+.comments-section {
+    margin-top: 32px;
+    border-top: 2px solid #e0e0e0;
+    padding-top: 24px;
+}
+
+.comments-section h2 {
+    font-size: 16px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+}
+
+.comment-bubble {
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid #ccc;
+}
+
+.comment-user {
+    background-color: #f0f4ff;
+    border-left-color: #2c7be5;
+}
+
+.comment-agent {
+    background-color: #f0fff4;
+    border-left-color: #28a745;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.comment-date {
+    color: #aaa;
+    font-size: 12px;
+    margin-left: auto;
+}
+
+.agent-badge {
+    background-color: #28a745;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.comment-body {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.comment-form {
+    margin-top: 20px;
+}
+
+.comment-form textarea {
+    margin-bottom: 10px;
+}
+
+.no-comments {
+    color: #aaa;
+    font-style: italic;
+    font-size: 14px;
+}
