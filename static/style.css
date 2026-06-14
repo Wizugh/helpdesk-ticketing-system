@@ -1,9 +1,31 @@
+/* =============================================
+   Base Layout
+   ============================================= */
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
 }
+
+.container {
+    max-width: 500px;
+    margin: 80px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.container.wide {
+    max-width: 900px;
+}
+
+
+/* =============================================
+   Navigation
+   ============================================= */
 
 .topnav {
     background-color: #1a3c5e;
@@ -53,19 +75,24 @@ body {
     background-color: #e74c3c !important;
 }
 
-.container {
-    max-width: 500px;
-    margin: 80px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+
+/* =============================================
+   Global Typography
+   ============================================= */
 
 h1 {
     margin-bottom: 24px;
     color: #333;
 }
+
+a {
+    color: #2c7be5;
+}
+
+
+/* =============================================
+   Form Elements
+   ============================================= */
 
 input {
     width: 100%;
@@ -75,34 +102,6 @@ input {
     border-radius: 4px;
     font-size: 14px;
     box-sizing: border-box;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #2c7be5;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #1a5dc8;
-}
-
-.error {
-    color: red;
-    margin-bottom: 12px;
-}
-
-a {
-    color: #2c7be5;
-}
-
-.container.wide {
-    max-width: 900px;
 }
 
 textarea {
@@ -124,6 +123,28 @@ select {
     margin-bottom: 16px;
 }
 
+/* Full-width default button style used in auth forms */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #2c7be5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1a5dc8;
+}
+
+
+/* =============================================
+   Buttons & Actions
+   ============================================= */
+
+/* .btn and .btn-secondary are used as link-styled buttons (display: inline-block) */
 .btn {
     display: inline-block;
     padding: 10px 20px;
@@ -180,7 +201,45 @@ select {
     font-style: italic;
 }
 
+
+/* =============================================
+   Feedback & Utilities
+   ============================================= */
+
+.error   { color: red;   margin-bottom: 12px; }
 .success { color: green; margin-bottom: 12px; }
+
+/* Visually hidden but readable by screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* =============================================
+   Status & Priority Colours
+   ============================================= */
+
+.priority-high   { color: #dc3545; font-weight: bold; }
+.priority-medium { color: #fd7e14; font-weight: bold; }
+.priority-low    { color: #28a745; font-weight: bold; }
+
+.status-open        { color: #2c7be5; font-weight: bold; }
+.status-in-progress { color: #fd7e14; font-weight: bold; }
+.status-resolved    { color: #28a745; font-weight: bold; }
+.status-closed      { color: #6c757d; font-weight: bold; }
+
+
+/* =============================================
+   Tables
+   ============================================= */
 
 table {
     width: 100%;
@@ -198,21 +257,17 @@ th, td {
 th { background-color: #f4f4f4; font-weight: bold; }
 tr:hover { background-color: #f9f9f9; }
 
-.priority-high { color: #dc3545; font-weight: bold; }
-.priority-medium { color: #fd7e14; font-weight: bold; }
-.priority-low { color: #28a745; font-weight: bold; }
-
-.status-open { color: #2c7be5; font-weight: bold; }
-.status-in-progress { color: #fd7e14; font-weight: bold; }
-.status-resolved { color: #28a745; font-weight: bold; }
-.status-closed { color: #6c757d; font-weight: bold; }
-
 .filter-form {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
 }
+
+
+/* =============================================
+   Ticket Reference & ID Badge
+   ============================================= */
 
 .ticket-ref {
     color: #888;
@@ -236,6 +291,11 @@ tr:hover { background-color: #f9f9f9; }
     border-radius: 4px;
     letter-spacing: 0.5px;
 }
+
+
+/* =============================================
+   Ticket Detail Page
+   ============================================= */
 
 .detail-grid {
     display: grid;
@@ -289,6 +349,7 @@ tr:hover { background-color: #f9f9f9; }
     margin: 0;
 }
 
+/* Used in the admin ticket management table */
 .assign-input {
     width: 120px;
     padding: 6px;
@@ -301,6 +362,11 @@ tr:hover { background-color: #f9f9f9; }
     font-size: 13px;
     font-style: italic;
 }
+
+
+/* =============================================
+   Comment Thread
+   ============================================= */
 
 .comments-section {
     margin-top: 32px;
@@ -323,14 +389,14 @@ tr:hover { background-color: #f9f9f9; }
     border-left: 4px solid #ccc;
 }
 
-.comment-user {
-    background-color: #f0f4ff;
-    border-left-color: #2c7be5;
-}
+/* Colour-coded left border shows who wrote the comment */
+.comment-user   { background-color: #f0f4ff; border-left-color: #2c7be5; }
+.comment-agent  { background-color: #f0fff4; border-left-color: #28a745; }
+.comment-system { background-color: #f5f5f5; border-left-color: #aaa; }
 
-.comment-agent {
-    background-color: #f0fff4;
-    border-left-color: #28a745;
+.comment-system .comment-body {
+    color: #666;
+    font-style: italic;
 }
 
 .comment-meta {
@@ -345,16 +411,6 @@ tr:hover { background-color: #f9f9f9; }
     color: #aaa;
     font-size: 12px;
     margin-left: auto;
-}
-
-.agent-badge {
-    background-color: #28a745;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
 }
 
 .comment-body {
@@ -379,14 +435,14 @@ tr:hover { background-color: #f9f9f9; }
     font-size: 14px;
 }
 
-.comment-system {
-    background-color: #f5f5f5;
-    border-left-color: #aaa;
-}
-
-.comment-system .comment-body {
-    color: #666;
-    font-style: italic;
+.agent-badge {
+    background-color: #28a745;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 .system-badge {
@@ -397,4 +453,367 @@ tr:hover { background-color: #f9f9f9; }
     border-radius: 10px;
     font-weight: bold;
     text-transform: uppercase;
+}
+
+
+/* =============================================
+   Admin Dashboard
+   ============================================= */
+
+.admin-page {
+    background-color: #f4f6f8;
+    min-height: calc(100vh - 52px);
+    padding: 36px 24px;
+    box-sizing: border-box;
+}
+
+.admin-content {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* --- Dashboard Header --- */
+
+.dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.dashboard-header-left { flex: 1; }
+
+.dashboard-header-right {
+    flex-shrink: 0;
+    padding-top: 6px;
+}
+
+.dashboard-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.dashboard-title {
+    margin: 0 0 4px 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a3c5e;
+}
+
+.dashboard-subtitle {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* --- Stat Cards --- */
+
+.stat-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card-v2 {
+    background: #ffffff;
+    border: 1px solid #e4e8ed;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.stat-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-icon-total       { background-color: #e8f0fe; color: #1a3c5e; }
+.stat-icon-open-v2     { background-color: #dbeafe; color: #2c7be5; }
+.stat-icon-progress    { background-color: #fff0e0; color: #fd7e14; }
+.stat-icon-resolved-v2 { background-color: #d4edda; color: #28a745; }
+.stat-icon-closed-v2   { background-color: #e9ecef; color: #6c757d; }
+
+.stat-info { flex: 1; min-width: 0; }
+
+.stat-count-v2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1a3c5e;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-name-v2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.stat-desc-v2 {
+    font-size: 11px;
+    color: #888;
+}
+
+/* --- Generic Dashboard Card --- */
+
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #e4e8ed;
+    border-radius: 10px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    margin: 0 0 2px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a3c5e;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.card-subtitle {
+    margin: 0;
+    font-size: 12px;
+    color: #888;
+}
+
+.card-link {
+    font-size: 13px;
+    color: #2c7be5;
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.card-link:hover { text-decoration: underline; }
+
+/* --- Analytics Grid --- */
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* --- Doughnut Chart --- */
+
+.chart-wrap {
+    position: relative;
+    height: 260px;
+}
+
+/* --- Priority Bars --- */
+
+.priority-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.priority-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.priority-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot-high   { background-color: #dc3545; }
+.dot-medium { background-color: #fd7e14; }
+.dot-low    { background-color: #28a745; }
+
+.priority-row-info { flex: 1; min-width: 0; }
+
+.priority-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.priority-row-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+}
+
+.priority-row-count {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a3c5e;
+}
+
+.priority-bar-track {
+    height: 8px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.priority-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.bar-high   { background-color: #dc3545; }
+.bar-medium { background-color: #fd7e14; }
+.bar-low    { background-color: #28a745; }
+
+@media (prefers-reduced-motion: reduce) {
+    .priority-bar-fill { transition: none; }
+}
+
+/* --- Recent Tickets Card --- */
+
+.recent-tickets-card { margin-bottom: 16px; }
+
+.table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    min-width: 580px;
+}
+
+.ticket-table th,
+.ticket-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.ticket-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.ticket-table tbody tr:hover { background-color: #f8f9fa; }
+.ticket-table tbody tr:last-child td { border-bottom: none; }
+
+.ticket-title-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ticket-date-cell {
+    white-space: nowrap;
+    color: #888;
+}
+
+/* --- Badges --- */
+
+.badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.badge-priority-high   { background: #fde8ea; color: #c0392b; }
+.badge-priority-medium { background: #fff0e0; color: #c0620a; }
+.badge-priority-low    { background: #d4edda; color: #155724; }
+
+.badge-status-open        { background: #dbeafe; color: #1a5dc8; }
+.badge-status-in-progress { background: #fff0e0; color: #c0620a; }
+.badge-status-resolved    { background: #d4edda; color: #155724; }
+.badge-status-closed      { background: #e9ecef; color: #495057; }
+
+/* --- View Button --- */
+
+.btn-view {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #f0f4ff;
+    color: #2c7be5;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #c7d8f7;
+}
+
+.btn-view:hover {
+    background: #2c7be5;
+    color: white;
+}
+
+/* --- Empty State --- */
+
+.empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: #888;
+}
+
+.empty-state p { margin: 4px 0; font-size: 14px; }
+.empty-title { font-weight: 600; color: #555; }
+.empty-sub   { font-size: 13px; color: #aaa; }
+
+/* --- Responsive Styles --- */
+
+@media (max-width: 1100px) {
+    .stat-grid-v2 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 860px) {
+    .analytics-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .admin-page      { padding: 20px 16px; }
+    .dashboard-title { font-size: 22px; }
+    .stat-grid-v2    { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+    .stat-grid-v2 { grid-template-columns: 1fr; }
 }

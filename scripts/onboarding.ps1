@@ -26,11 +26,8 @@ $tasks = @(
     "Confirm user can log in successfully"
 )
 
-$completed = 0
-
 foreach ($task in $tasks) {
     Write-Host "[ ] $task" -ForegroundColor Yellow
-    $completed++
 }
 
 Write-Host ""

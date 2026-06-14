@@ -1,0 +1,34 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# SQLite database (contains live data, not source code)
+*.db
+*.sqlite
+
+# Flask instance folder
+instance/
+
+# Environment variables
+.env
+*.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PowerShell script output files
+onboarding_*.txt
+diskspace_log_*.txt
+users_export_*.csv

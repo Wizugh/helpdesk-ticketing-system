@@ -4,22 +4,26 @@
 {% block content %}
 <div class="container wide">
     <h1>All Tickets</h1>
+
+    <!-- Filters -->
     <form method="GET" class="filter-form">
         <select name="status">
-            <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Statuses</option>
-            <option value="open" {% if status_filter=='open' %}selected{% endif %}>Open</option>
-            <option value="in progress" {% if status_filter=='in progress' %}selected{% endif %}>In Progress</option>
-            <option value="resolved" {% if status_filter=='resolved' %}selected{% endif %}>Resolved</option>
-            <option value="closed" {% if status_filter=='closed' %}selected{% endif %}>Closed</option>
+            <option value="all"         {% if status_filter == 'all'         %}selected{% endif %}>All Statuses</option>
+            <option value="open"        {% if status_filter == 'open'        %}selected{% endif %}>Open</option>
+            <option value="in progress" {% if status_filter == 'in progress' %}selected{% endif %}>In Progress</option>
+            <option value="resolved"    {% if status_filter == 'resolved'    %}selected{% endif %}>Resolved</option>
+            <option value="closed"      {% if status_filter == 'closed'      %}selected{% endif %}>Closed</option>
         </select>
         <select name="priority">
-            <option value="all" {% if priority_filter=='all' %}selected{% endif %}>All Priorities</option>
-            <option value="low" {% if priority_filter=='low' %}selected{% endif %}>Low</option>
-            <option value="medium" {% if priority_filter=='medium' %}selected{% endif %}>Medium</option>
-            <option value="high" {% if priority_filter=='high' %}selected{% endif %}>High</option>
+            <option value="all"    {% if priority_filter == 'all'    %}selected{% endif %}>All Priorities</option>
+            <option value="low"    {% if priority_filter == 'low'    %}selected{% endif %}>Low</option>
+            <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="high"   {% if priority_filter == 'high'   %}selected{% endif %}>High</option>
         </select>
         <button type="submit">Filter</button>
     </form>
+
+    <!-- Ticket Table -->
     {% if tickets %}
     <table>
         <thead>
@@ -47,14 +51,17 @@
                 <td>
                     <form method="POST" action="/admin/update/{{ ticket['id'] }}">
                         <select name="status">
-                            <option value="open" {% if ticket['status']=='open' %}selected{% endif %}>Open</option>
-                            <option value="in progress" {% if ticket['status']=='in progress' %}selected{% endif %}>In Progress</option>
-                            <option value="resolved" {% if ticket['status']=='resolved' %}selected{% endif %}>Resolved</option>
+                            <option value="open"        {% if ticket['status'] == 'open'        %}selected{% endif %}>Open</option>
+                            <option value="in progress" {% if ticket['status'] == 'in progress' %}selected{% endif %}>In Progress</option>
+                            <option value="resolved"    {% if ticket['status'] == 'resolved'    %}selected{% endif %}>Resolved</option>
                         </select>
-                        <input type="text" name="assigned_to"
-                               value="{{ ticket['assigned_to'] or '' }}"
-                               placeholder="Assign to agent"
-                               class="assign-input">
+                        <input
+                            type="text"
+                            name="assigned_to"
+                            value="{{ ticket['assigned_to'] or '' }}"
+                            placeholder="Assign to agent"
+                            class="assign-input"
+                        >
                         <button type="submit">Update</button>
                     </form>
                 </td>
@@ -62,9 +69,12 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Empty State -->
     {% else %}
         <p>No tickets found.</p>
     {% endif %}
+
     <br>
     <a href="/admin">Back to Admin Dashboard</a>
 </div>

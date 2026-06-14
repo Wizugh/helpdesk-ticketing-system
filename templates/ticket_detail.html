@@ -3,9 +3,12 @@
 
 {% block content %}
 <div class="container wide">
+
+    <!-- Ticket Header -->
     <p class="ticket-ref">Ticket Reference: <strong>#{{ '%04d'|format(ticket['id']) }}</strong></p>
     <h1>{{ ticket['title'] }}</h1>
 
+    <!-- Details Grid -->
     <div class="detail-grid">
         <div class="detail-card">
             <h2>Details</h2>
@@ -39,12 +42,21 @@
         </div>
     </div>
 
+    <!-- Activity & Comments -->
     <div class="comments-section">
         <h2>Activity</h2>
 
         {% if comments %}
             {% for comment in comments %}
-            <div class="comment-bubble {% if comment['author'] == 'System' %}comment-system{% elif comment['author'] == ticket['created_by'] %}comment-user{% else %}comment-agent{% endif %}">
+            {# Assign a CSS modifier class based on who wrote the comment #}
+            {% if comment['author'] == 'System' %}
+                {% set bubble_class = 'comment-system' %}
+            {% elif comment['author'] == ticket['created_by'] %}
+                {% set bubble_class = 'comment-user' %}
+            {% else %}
+                {% set bubble_class = 'comment-agent' %}
+            {% endif %}
+            <div class="comment-bubble {{ bubble_class }}">
                 <div class="comment-meta">
                     <strong>{{ comment['author'] }}</strong>
                     {% if comment['author'] == 'System' %}
@@ -71,6 +83,7 @@
         {% endif %}
     </div>
 
+    <!-- Close Ticket -->
     {% if session['role'] != 'admin' and ticket['created_by'] == session['user'] and ticket['status'] != 'closed' %}
     <div class="close-ticket-box">
         <p class="close-ticket-hint">Has your issue been resolved? Close this ticket to confirm.</p>
@@ -80,11 +93,13 @@
     </div>
     {% endif %}
 
+    <!-- Navigation -->
     <br>
     {% if session['role'] == 'admin' %}
         <a href="/admin/tickets" class="btn-secondary">Back to All Tickets</a>
     {% else %}
         <a href="/mytickets" class="btn-secondary">Back to My Tickets</a>
     {% endif %}
+
 </div>
 {% endblock %}
