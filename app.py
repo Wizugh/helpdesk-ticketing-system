@@ -214,9 +214,27 @@ def update_ticket(ticket_id):
         return redirect(url_for('login'))
     new_status = request.form['status']
     assigned_to = request.form.get('assigned_to', '').strip() or None
+    from datetime import datetime
+    date = datetime.now().strftime('%Y-%m-%d %H:%M')
     conn = get_db()
+    ticket = conn.execute('SELECT status, assigned_to FROM tickets WHERE id = ?',
+                          (ticket_id,)).fetchone()
+    log_entries = []
+    if ticket['status'] != new_status:
+        log_entries.append(
+            f"Status changed from {ticket['status'].title()} to {new_status.title()} by {session['user']}"
+        )
+    old_assigned = ticket['assigned_to'] or 'Unassigned'
+    new_assigned = assigned_to or 'Unassigned'
+    if old_assigned != new_assigned:
+        log_entries.append(f"Assigned to {new_assigned} by {session['user']}")
     conn.execute('UPDATE tickets SET status = ?, assigned_to = ? WHERE id = ?',
                 (new_status, assigned_to, ticket_id))
+    for entry in log_entries:
+        conn.execute(
+            'INSERT INTO comments (ticket_id, author, body, date) VALUES (?, ?, ?, ?)',
+            (ticket_id, 'System', entry, date)
+        )
     conn.commit()
     conn.close()
     return redirect(url_for('admin_tickets'))
