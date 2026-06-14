@@ -10,6 +10,7 @@
             <option value="open" {% if status_filter=='open' %}selected{% endif %}>Open</option>
             <option value="in progress" {% if status_filter=='in progress' %}selected{% endif %}>In Progress</option>
             <option value="resolved" {% if status_filter=='resolved' %}selected{% endif %}>Resolved</option>
+            <option value="closed" {% if status_filter=='closed' %}selected{% endif %}>Closed</option>
         </select>
         <select name="priority">
             <option value="all" {% if priority_filter=='all' %}selected{% endif %}>All Priorities</option>

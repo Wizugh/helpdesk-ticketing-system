@@ -146,6 +146,40 @@ select {
     font-size: 15px;
 }
 
+.btn-danger {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 4px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.btn-danger:hover { background-color: #b02a37; }
+
+.close-ticket-box {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background-color: #fff5f5;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+}
+
+.close-ticket-hint {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.ticket-closed-notice {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #6c757d;
+    font-style: italic;
+}
+
 .success { color: green; margin-bottom: 12px; }
 
 table {
@@ -171,6 +205,7 @@ tr:hover { background-color: #f9f9f9; }
 .status-open { color: #2c7be5; font-weight: bold; }
 .status-in-progress { color: #fd7e14; font-weight: bold; }
 .status-resolved { color: #28a745; font-weight: bold; }
+.status-closed { color: #6c757d; font-weight: bold; }
 
 .filter-form {
     display: flex;

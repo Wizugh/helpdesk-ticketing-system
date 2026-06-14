@@ -61,11 +61,24 @@
             <p class="no-comments">No activity yet.</p>
         {% endif %}
 
+        {% if ticket['status'] != 'closed' %}
         <form method="POST" action="/ticket/{{ ticket['id'] }}/comment" class="comment-form">
             <textarea name="body" rows="3" placeholder="Add a comment or update..." required></textarea>
             <button type="submit" class="btn">Post Comment</button>
         </form>
+        {% else %}
+        <p class="ticket-closed-notice">This ticket is closed. No further replies can be added.</p>
+        {% endif %}
     </div>
+
+    {% if session['role'] != 'admin' and ticket['created_by'] == session['user'] and ticket['status'] != 'closed' %}
+    <div class="close-ticket-box">
+        <p class="close-ticket-hint">Has your issue been resolved? Close this ticket to confirm.</p>
+        <form method="POST" action="/ticket/{{ ticket['id'] }}/close">
+            <button type="submit" class="btn-danger">Close This Ticket</button>
+        </form>
+    </div>
+    {% endif %}
 
     <br>
     {% if session['role'] == 'admin' %}

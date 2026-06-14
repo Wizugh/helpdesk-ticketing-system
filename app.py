@@ -239,5 +239,31 @@ def update_ticket(ticket_id):
     conn.close()
     return redirect(url_for('admin_tickets'))
 
+@app.route('/ticket/<int:ticket_id>/close', methods=['POST'])
+def close_ticket(ticket_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    from datetime import datetime
+    date = datetime.now().strftime('%Y-%m-%d %H:%M')
+    conn = get_db()
+    ticket = conn.execute('SELECT * FROM tickets WHERE id = ?', (ticket_id,)).fetchone()
+    if ticket is None:
+        conn.close()
+        return 'Ticket not found', 404
+    if ticket['created_by'] != session['user']:
+        conn.close()
+        return 'Access denied', 403
+    if ticket['status'] == 'closed':
+        conn.close()
+        return redirect(url_for('ticket_detail', ticket_id=ticket_id))
+    conn.execute("UPDATE tickets SET status = 'closed' WHERE id = ?", (ticket_id,))
+    conn.execute(
+        'INSERT INTO comments (ticket_id, author, body, date) VALUES (?, ?, ?, ?)',
+        (ticket_id, 'System', f'Ticket closed by {session["user"]}', date)
+    )
+    conn.commit()
+    conn.close()
+    return redirect(url_for('ticket_detail', ticket_id=ticket_id))
+
 if __name__ == '__main__':
     app.run(debug=True)
