@@ -225,6 +225,18 @@ tr:hover { background-color: #f9f9f9; }
     font-size: 15px;
 }
 
+.ticket-id-badge {
+    display: inline-block;
+    background-color: #e8f0fe;
+    color: #1a3c5e;
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: 1fr 2fr;

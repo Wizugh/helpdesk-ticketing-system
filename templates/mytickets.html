@@ -18,7 +18,7 @@
         <tbody>
             {% for ticket in tickets %}
             <tr>
-                <td>{{ ticket['id'] }}</td>
+                <td><span class="ticket-id-badge">#{{ '%04d'|format(ticket['id']) }}</span></td>
                 <td><a href="/ticket/{{ ticket['id'] }}">{{ ticket['title'] }}</a></td>
                 <td class="priority-{{ ticket['priority'] }}">{{ ticket['priority'] }}</td>
                 <td class="status-{{ ticket['status'].replace(' ', '-') }}">{{ ticket['status'] }}</td>
