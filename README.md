@@ -60,9 +60,17 @@ cd helpdesk-ticketing-system
 ```
 
 **2. Create and activate a virtual environment:**
+
+Windows:
 ```
 python -m venv venv
 venv\Scripts\activate
+```
+
+Mac / Linux:
+```
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 **3. Install dependencies:**
@@ -142,10 +150,21 @@ http://localhost:5000
 
 **6. Create an admin account:**
 
-Register a new account through the web interface, then run this in a second terminal:
+Register a new account through the web interface, then open a second terminal and start a Python shell inside the container:
 ```
-docker compose exec web python -c "import sqlite3; conn = sqlite3.connect('/app/data/database.db'); conn.execute(\"UPDATE users SET role = 'admin' WHERE username = 'yourusername'\"); conn.commit(); conn.close()"
+docker compose exec web python
 ```
+
+Then run these lines one at a time, replacing `yourusername` with your account name:
+```python
+import sqlite3
+conn = sqlite3.connect('/app/data/database.db')
+conn.execute("UPDATE users SET role = 'admin' WHERE username = 'yourusername'")
+conn.commit()
+conn.close()
+```
+
+Type `exit()` when done.
 
 **To stop the app:**
 ```
