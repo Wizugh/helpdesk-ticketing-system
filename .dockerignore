@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Local database — the container uses a Docker volume instead
+*.db
+data/
+
+# Environment variable files — must never be baked into the image
+.env
+.env.*
+
+# Git history
+.git/
+.gitignore
+
+# PowerShell scripts are not needed inside the container
+scripts/
+
+# Docs and config not needed at runtime
+README.md

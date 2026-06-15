@@ -43,6 +43,7 @@ and IT automation.
 - **Database:** SQLite
 - **Frontend:** HTML, CSS, JavaScript
 - **Charts:** Chart.js 4
+- **Containerisation:** Docker, Docker Compose
 - **Automation:** PowerShell
 - **Version Control:** Git, GitHub
 
@@ -94,6 +95,70 @@ conn.close()
 
 ---
 
+## How To Run with Docker
+
+**Requirements:** Docker Desktop installed and running
+
+**1. Clone the repository:**
+```
+git clone https://github.com/Wizugh/helpdesk-ticketing-system.git
+cd helpdesk-ticketing-system
+```
+
+**2. Create your environment file:**
+
+`.env` is not included in the repository. Create it by copying the example template:
+```
+copy .env.example .env
+```
+This creates a `.env` file on your machine with placeholder values. Open it in any text editor — you will need to fill in `SECRET_KEY` in the next step.
+
+**3. Generate a secret key and paste it into `.env`:**
+
+Run one of these commands (you only need one — use whichever you have):
+
+If you have Python installed:
+```
+python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+If you only have Docker:
+```
+docker run --rm python:3.11-slim python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Copy the output, open `.env`, and replace `change-this-to-a-long-random-string` with it.
+Leave `DATABASE_PATH` as-is.
+
+**4. Build and start the container:**
+```
+docker compose up --build
+```
+
+**5. Open in browser:**
+```
+http://localhost:5000
+```
+
+**6. Create an admin account:**
+
+Register a new account through the web interface, then run this in a second terminal:
+```
+docker compose exec web python -c "import sqlite3; conn = sqlite3.connect('/app/data/database.db'); conn.execute(\"UPDATE users SET role = 'admin' WHERE username = 'yourusername'\"); conn.commit(); conn.close()"
+```
+
+**To stop the app:**
+```
+docker compose down
+```
+
+Your data is stored in a Docker volume and survives restarts. To also delete the database when stopping:
+```
+docker compose down -v
+```
+
+---
+
 ## PowerShell Automation Scripts
 
 Located in the `/scripts` folder. Run from a PowerShell terminal inside the scripts directory.
@@ -137,6 +202,8 @@ Exports results to a timestamped CSV file.
 - Designing an automatic audit log that records field-level changes without any manual input
 - Automating real IT tasks with PowerShell including user provisioning, disk monitoring, and account auditing
 - Manual database administration — resetting passwords and updating user roles directly via SQL
+- Containerising a Flask app with Docker and Docker Compose, including volume mounts for database persistence
+- Managing secrets with environment variables so sensitive values like the Flask secret key never appear in source code
 - Git version control and pushing to GitHub throughout the build process
 
 ---

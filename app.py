@@ -1,12 +1,17 @@
+import os
 from datetime import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 
+# Defaults to database.db for local development.
+# Set DATABASE_PATH in the environment to redirect to a Docker volume.
+DB_PATH = os.environ.get('DATABASE_PATH', 'database.db')
+
 
 app = Flask(__name__)
-app.secret_key = 'helpdeskkey123'
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-only-key-change-in-production')
 
 
 # ---------------------------------------------------------------------------
@@ -14,7 +19,7 @@ app.secret_key = 'helpdeskkey123'
 # ---------------------------------------------------------------------------
 
 def get_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_PATH)
     # row_factory lets us access columns by name, e.g. row['title'],
     # instead of by numeric index like row[1]
     conn.row_factory = sqlite3.Row
@@ -374,4 +379,6 @@ def update_ticket(ticket_id):
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # host='0.0.0.0' binds to all network interfaces so the app is reachable
+    # from outside the Docker container. Harmless when running locally.
+    app.run(host='0.0.0.0', debug=True)
