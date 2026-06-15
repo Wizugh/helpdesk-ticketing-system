@@ -142,7 +142,13 @@ def logout():
 def dashboard():
     if 'user' not in session:
         return redirect(url_for('login'))
-    return render_template('dashboard.html', username=session['user'])
+    conn = get_db()
+    recent_tickets = conn.execute(
+        'SELECT * FROM tickets WHERE created_by = ? ORDER BY date DESC LIMIT 5',
+        (session['user'],)
+    ).fetchall()
+    conn.close()
+    return render_template('dashboard.html', username=session['user'], recent_tickets=recent_tickets)
 
 
 @app.route('/submit', methods=['GET', 'POST'])
@@ -210,8 +216,18 @@ def post_comment(ticket_id):
     body = request.form.get('body', '').strip()
     if not body:
         return redirect(url_for('ticket_detail', ticket_id=ticket_id))
-    date = datetime.now().strftime('%Y-%m-%d %H:%M')
     conn = get_db()
+    ticket = conn.execute(
+        'SELECT * FROM tickets WHERE id = ?', (ticket_id,)
+    ).fetchone()
+    if ticket is None:
+        conn.close()
+        return 'Ticket not found', 404
+    # Admins can comment on any ticket; regular users can only comment on their own
+    if session['role'] != 'admin' and ticket['created_by'] != session['user']:
+        conn.close()
+        return 'Access denied', 403
+    date = datetime.now().strftime('%Y-%m-%d %H:%M')
     conn.execute(
         'INSERT INTO comments (ticket_id, author, body, date) VALUES (?, ?, ?, ?)',
         (ticket_id, session['user'], body, date)
