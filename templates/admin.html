@@ -12,8 +12,9 @@
                 <h1 class="dashboard-title">Ticket Overview</h1>
                 <p class="dashboard-subtitle">Monitor and manage help desk activity.</p>
             </div>
-            <div class="dashboard-header-right">
+            <div class="dashboard-header-right" style="display:flex;gap:10px;flex-wrap:wrap;">
                 <a href="{{ url_for('admin_tickets') }}" class="btn">Manage All Tickets</a>
+                <a href="{{ url_for('admin_practice') }}" class="btn btn-practice-lab">IT Practice Lab</a>
             </div>
         </div>
 
@@ -226,7 +227,7 @@
     // Ticket count data injected by Flask at render time.
     // tojson safely converts Python integers to JavaScript numbers.
     const openCount     = {{ (stats['open_count']        or 0) | tojson }};
-    const inProgCount   = {{ (stats['in_progress_count'] or 0) | tojson }};
+    const inProgCount   =  {{ (stats['in_progress_count'] or 0) | tojson }};
     const resolvedCount = {{ (stats['resolved_count']    or 0) | tojson }};
     const closedCount   = {{ (stats['closed_count']      or 0) | tojson }};
     const totalCount    = {{ (stats['total']              or 0) | tojson }};

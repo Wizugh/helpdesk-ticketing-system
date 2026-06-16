@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Practice Ticket #{{ '%04d'|format(scenario['id']) }}{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-content">
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-header-left">
+                <span class="dashboard-eyebrow">IT SUPPORT PRACTICE LAB</span>
+                <h1 class="dashboard-title">Practice Ticket</h1>
+                <p class="dashboard-subtitle">
+                    Read the ticket below and write a professional IT support response.
+                </p>
+            </div>
+            <div class="dashboard-header-right">
+                <a href="{{ url_for('admin_practice') }}" class="btn-secondary">Back to Practice Lab</a>
+            </div>
+        </div>
+
+        <div class="practice-scenario-grid">
+
+            <!-- Left: Ticket -->
+            <div>
+                <div class="dashboard-card" style="margin-bottom:16px;">
+                    <div class="card-header">
+                        <div>
+                            <p class="ticket-ref" style="margin:0 0 4px 0;">
+                                Scenario Reference: <strong style="color:#1a3c5e;">#{{ '%04d'|format(scenario['id']) }}</strong>
+                            </p>
+                            <h2 class="card-title" style="font-size:17px;">{{ scenario['title'] }}</h2>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+                        <span class="badge badge-category">{{ scenario['category'] }}</span>
+                        <span class="badge badge-priority-{{ scenario['priority'] }}">{{ scenario['priority'] }}</span>
+                        <span class="badge badge-difficulty-{{ scenario['difficulty'].lower() }}">{{ scenario['difficulty'] }}</span>
+                    </div>
+                    <p class="description-box" style="margin:0;">{{ scenario['description'] }}</p>
+                </div>
+
+                <!-- Grading Rubric Summary -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Grading Rubric</h2>
+                        <span class="card-subtitle">100 points total</span>
+                    </div>
+                    <table class="detail-table" style="width:100%;">
+                        <tbody>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;">Technical Accuracy</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;">35 pts</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;">Troubleshooting Process</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;">20 pts</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;">Security &amp; Safety</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;">15 pts</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;">Completeness &amp; Escalation</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;">10 pts</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;">Professionalism &amp; Empathy</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;">10 pts</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:8px 0;font-size:14px;color:#333;border-bottom:none;">Clarity &amp; Actionability</td>
+                                <td style="padding:8px 0;font-size:14px;text-align:right;font-weight:600;color:#1a3c5e;border-bottom:none;">10 pts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin:12px 0 0;font-size:12px;color:#888;">
+                        Passing score: 70 or higher. Score caps apply for security violations or technically incorrect advice.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right: Response Form -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Your Response</h2>
+                </div>
+                <p style="font-size:13px;color:#555;margin:0 0 12px 0;">
+                    Write a professional IT support response to the ticket above.
+                    Imagine you are the first-line support engineer replying to this request.
+                </p>
+                <form method="POST"
+                      action="{{ url_for('practice_submit', scenario_id=scenario['id']) }}"
+                      id="submit-form">
+                    <textarea
+                        name="response_text"
+                        id="response_text"
+                        rows="18"
+                        maxlength="{{ max_chars }}"
+                        placeholder="Type your IT support response here…"
+                        required
+                        style="margin-bottom:6px;"
+                    ></textarea>
+                    <div class="char-counter">
+                        <span id="char-count">0</span> / {{ max_chars }} characters
+                    </div>
+                    <button type="submit"
+                            class="btn"
+                            id="submit-btn"
+                            style="width:100%;margin-top:12px;">
+                        Submit for Grading
+                    </button>
+                    <p style="font-size:12px;color:#888;margin:8px 0 0;text-align:center;">
+                        Each grading uses one API call and counts toward your daily limit.
+                    </p>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    var textarea   = document.getElementById('response_text');
+    var charCount  = document.getElementById('char-count');
+    var form       = document.getElementById('submit-form');
+    var submitBtn  = document.getElementById('submit-btn');
+
+    // Live character counter
+    if (textarea && charCount) {
+        textarea.addEventListener('input', function () {
+            charCount.textContent = textarea.value.length;
+        });
+    }
+
+    // Disable submit on first click to prevent double-charges
+    if (form && submitBtn) {
+        form.addEventListener('submit', function () {
+            submitBtn.disabled    = true;
+            submitBtn.textContent = 'Grading…';
+        });
+    }
+})();
+</script>
+{% endblock %}

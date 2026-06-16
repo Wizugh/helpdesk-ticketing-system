@@ -18,7 +18,17 @@ and IT automation.
 - Comment on open tickets to add updates or ask questions
 - Close your own ticket once your issue is resolved
 
-**Admin features:**
+**Admin features (IT Support Practice Lab):**
+- Generate a fictional IT support ticket with one click (AI-powered via Claude Haiku)
+- Write a professional IT support response and receive AI grading across six rubric categories
+- View a detailed score breakdown, specific feedback, security flags, and an improved example answer
+- Review the hidden answer key (expected troubleshooting steps, prohibited actions, escalation conditions) revealed after grading
+- Track attempt history, average score, and best score per session
+- Retry any previous scenario without paying to regenerate it
+- Monitor estimated API spend against a configurable local budget
+- All practice data is fully isolated from real helpdesk tickets
+
+**Admin features (helpdesk):**
 - View all tickets across the system from a live analytics dashboard
   - Doughnut chart showing ticket breakdown by status
   - Priority bars showing active (open + in-progress) tickets by priority level
@@ -43,9 +53,123 @@ and IT automation.
 - **Database:** SQLite
 - **Frontend:** HTML, CSS, JavaScript
 - **Charts:** Chart.js 4
+- **AI:** Anthropic Python SDK (Claude Haiku)
 - **Containerisation:** Docker, Docker Compose
 - **Automation:** PowerShell
 - **Version Control:** Git, GitHub
+
+---
+
+## IT Support Practice Lab
+
+An admin-only feature that uses the Anthropic Claude API to generate realistic fictional IT support scenarios and grade your responses.
+
+### Feature workflow
+
+1. Admin selects a category (e.g. Networking, Security) and difficulty (Beginner / Intermediate / Advanced).
+2. Claude Haiku generates a fictional workplace IT ticket and a hidden answer key.
+3. The admin writes a professional IT support response.
+4. Claude grades the response against a strict 100-point rubric.
+5. Python independently validates every score, sums them, and applies caps — Claude's arithmetic is never trusted.
+6. The admin sees a full breakdown with scores, feedback, an improved example, and the expected troubleshooting checklist.
+
+### Grading rubric (100 points)
+
+| Category                     | Max |
+|------------------------------|-----|
+| Technical Accuracy           |  35 |
+| Troubleshooting Process      |  20 |
+| Security & Safety            |  15 |
+| Completeness & Escalation    |  10 |
+| Professionalism & Empathy    |  10 |
+| Clarity & Actionability      |  10 |
+
+Passing score: **70 or higher** after score caps.
+
+### Strict score caps
+
+Certain flags automatically cap the final score regardless of the rubric total:
+
+| Flag                                  | Maximum score |
+|---------------------------------------|---------------|
+| Requests or exposes credentials       | 39            |
+| Dangerous or insecure guidance        | 39            |
+| Fundamentally incorrect resolution   | 59            |
+| No meaningful troubleshooting         | 69            |
+
+If multiple caps apply, the lowest (most severe) is used.
+
+### Anthropic API setup
+
+1. Create an account at [console.anthropic.com](https://console.anthropic.com/) and generate an API key.
+2. Copy `.env.example` to `.env`.
+3. Set `ANTHROPIC_API_KEY=sk-ant-...` in your `.env` file.
+4. The rest of the application starts normally without the key — only the Practice Lab is disabled.
+
+### Local .env configuration
+
+```
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+CLAUDE_MODEL=claude-haiku-4-5-20251001
+PRACTICE_BUDGET_USD=5.00
+PRACTICE_DAILY_API_CALL_LIMIT=40
+PRACTICE_MAX_RESPONSE_CHARS=5000
+CLAUDE_INPUT_COST_PER_MILLION=1.00
+CLAUDE_OUTPUT_COST_PER_MILLION=5.00
+```
+
+### Docker setup
+
+The same `.env` file is loaded by Docker Compose via `env_file`. No extra steps needed — the Practice Lab works in Docker the same way as locally.
+
+### Model configuration
+
+The default model is `claude-haiku-4-5-20251001`. To use a different model, set `CLAUDE_MODEL` in your `.env`. Token pricing defaults match Haiku 4.5; update `CLAUDE_INPUT_COST_PER_MILLION` and `CLAUDE_OUTPUT_COST_PER_MILLION` if you change models.
+
+### Local budget
+
+`PRACTICE_BUDGET_USD` sets a local estimated spend cap. The app blocks new API calls once this threshold is reached.
+
+**Important:** This is an estimate based on calls recorded by this application — it is **not** your official Anthropic account balance. Check your actual usage at [console.anthropic.com](https://console.anthropic.com/).
+
+### Daily API call limit
+
+`PRACTICE_DAILY_API_CALL_LIMIT` caps the total number of API calls (generations + gradings) per admin per day. The counter resets at midnight. Default: 40 calls/day.
+
+### How to run tests
+
+Install dev dependencies:
+
+```
+pip install -r requirements-dev.txt
+```
+
+Run the full test suite (no real API calls are made):
+
+```
+python -m pytest tests/ -v
+```
+
+Or just the quick summary:
+
+```
+python -m pytest -q
+```
+
+### Privacy and security notes
+
+- The Anthropic API key is never written to source code, templates, JavaScript, or logs.
+- The hidden answer key is never included in HTML before an attempt is graded.
+- Admin responses are sent to Claude inside `<administrator_response>` XML tags — the Anthropic-recommended pattern for injecting untrusted content safely.
+- Claude is explicitly instructed not to follow any instructions embedded in the admin response.
+- All AI-generated text is HTML-escaped by Jinja's default auto-escaping (`{{ variable }}`, never `{{ variable|safe }}`).
+- AI text is never rendered with `innerHTML`.
+- All database queries are parameterised — no string concatenation.
+- Practice data (scenarios and attempts) is kept in separate tables and never mixes with real helpdesk tickets.
+
+### AI feedback disclaimer
+
+Scores and feedback are AI-generated by Claude for self-improvement practice only. This is not a certification, professional assessment, or official evaluation.
 
 ---
 
@@ -223,6 +347,11 @@ Exports results to a timestamped CSV file.
 - Manual database administration — resetting passwords and updating user roles directly via SQL
 - Containerising a Flask app with Docker and Docker Compose, including volume mounts for database persistence
 - Managing secrets with environment variables so sensitive values like the Flask secret key never appear in source code
+- Integrating the Anthropic Claude API for AI-powered scenario generation and structured response grading
+- Using JSON Schema structured outputs (`output_config`) to enforce reliable, schema-conformant API responses
+- Building a multi-turn conversation retry loop so a malformed AI response triggers one clean retry rather than a user-visible crash
+- Independently validating and capping AI-reported scores in Python so Claude's arithmetic is never trusted
+- Tracking API token usage per call and enforcing a local estimated spend cap to prevent accidental overuse
 - Git version control and pushing to GitHub throughout the build process
 
 ---

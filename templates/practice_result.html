@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+{% block title %}Practice Result — {{ attempt['letter_grade'] }} ({{ attempt['final_score'] }}/100){% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-content">
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-header-left">
+                <span class="dashboard-eyebrow">IT SUPPORT PRACTICE LAB — RESULT</span>
+                <h1 class="dashboard-title">{{ scenario['title'] }}</h1>
+                <p class="dashboard-subtitle">
+                    <span class="badge badge-category">{{ scenario['category'] }}</span>
+                    <span class="badge badge-difficulty-{{ scenario['difficulty'].lower() }}" style="margin-left:4px;">{{ scenario['difficulty'] }}</span>
+                </p>
+            </div>
+            <div class="dashboard-header-right" style="display:flex;gap:8px;flex-wrap:wrap;">
+                <a href="{{ url_for('practice_scenario', scenario_id=scenario['id']) }}" class="btn-secondary">Retry This Scenario</a>
+                <a href="{{ url_for('admin_practice') }}" class="btn">Back to Practice Lab</a>
+            </div>
+        </div>
+
+        <!-- Score Summary -->
+        <div class="practice-score-summary">
+            <div class="practice-score-main">
+                <div class="practice-score-number {% if attempt['passed'] %}score-pass{% else %}score-fail{% endif %}">
+                    {{ attempt['final_score'] }}
+                </div>
+                <div class="practice-score-denom">/100</div>
+            </div>
+            <div class="practice-score-meta">
+                <div class="practice-grade-large grade-{{ attempt['letter_grade'].replace('+','plus').replace('-','minus') }}">
+                    {{ attempt['letter_grade'] }}
+                </div>
+                <div class="practice-pass-label {% if attempt['passed'] %}pass-label-pass{% else %}pass-label-fail{% endif %}">
+                    {% if attempt['passed'] %}PASS{% else %}FAIL{% endif %}
+                </div>
+                {% if attempt['score_cap_reason'] %}
+                <div class="practice-cap-note">
+                    ⚠ Cap applied: raw score was {{ attempt['raw_score'] }}/100.
+                    {{ attempt['score_cap_reason'] }}.
+                </div>
+                {% endif %}
+                <div style="font-size:12px;color:#888;margin-top:8px;">
+                    Graded {{ attempt['submitted_at'][:16] }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Score Cards -->
+        <div class="dashboard-card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <h2 class="card-title">Category Scores</h2>
+            </div>
+            <div class="practice-cat-grid">
+
+                {% set cat_data = [
+                    ('technical_accuracy',          'Technical Accuracy',          35),
+                    ('troubleshooting_process',     'Troubleshooting Process',     20),
+                    ('security_and_safety',         'Security & Safety',           15),
+                    ('completeness_and_escalation', 'Completeness & Escalation',   10),
+                    ('professionalism_and_empathy', 'Professionalism & Empathy',   10),
+                    ('clarity_and_actionability',   'Clarity & Actionability',     10),
+                ] %}
+
+                {% for key, label, max_pts in cat_data %}
+                {% set score = category_scores.get(key, 0) %}
+                {% set pct   = (score / max_pts * 100)|int %}
+                <div class="practice-cat-card">
+                    <div class="practice-cat-header">
+                        <span class="practice-cat-label">{{ label }}</span>
+                        <span class="practice-cat-score">{{ score }}/{{ max_pts }}</span>
+                    </div>
+                    <div class="practice-bar-track">
+                        <div class="practice-bar-fill {% if pct >= 70 %}bar-good{% elif pct >= 40 %}bar-mid{% else %}bar-low-score{% endif %}"
+                             style="width:{{ pct }}%"></div>
+                    </div>
+                    {% set fb = feedback.get('category_feedback', {}).get(key, '') %}
+                    {% if fb %}
+                    <p class="practice-cat-feedback">{{ fb }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <!-- Detailed Feedback Grid -->
+        <div class="practice-feedback-grid">
+
+            <!-- Strengths -->
+            <div class="dashboard-card">
+                <h2 class="card-title" style="margin-bottom:12px;">Strengths</h2>
+                {% set strengths = feedback.get('strengths', []) %}
+                {% if strengths %}
+                <ul class="practice-list practice-list-green">
+                    {% for item in strengths %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="practice-empty-note">No specific strengths were identified.</p>
+                {% endif %}
+            </div>
+
+            <!-- Technical Errors -->
+            <div class="dashboard-card">
+                <h2 class="card-title" style="margin-bottom:12px;">Technical Errors</h2>
+                {% set errors = feedback.get('technical_errors', []) %}
+                {% if errors %}
+                <ul class="practice-list practice-list-red">
+                    {% for item in errors %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="practice-empty-note">No technical errors were identified.</p>
+                {% endif %}
+            </div>
+
+            <!-- Missing Items -->
+            <div class="dashboard-card">
+                <h2 class="card-title" style="margin-bottom:12px;">Missing Items</h2>
+                {% set missing = feedback.get('missing_items', []) %}
+                {% if missing %}
+                <ul class="practice-list practice-list-orange">
+                    {% for item in missing %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="practice-empty-note">No missing items were identified.</p>
+                {% endif %}
+            </div>
+
+            <!-- Security Concerns -->
+            <div class="dashboard-card">
+                <h2 class="card-title" style="margin-bottom:12px;">Security Concerns</h2>
+                {% set security = feedback.get('security_concerns', []) %}
+                {% if security %}
+                <ul class="practice-list practice-list-red">
+                    {% for item in security %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="practice-empty-note">No security concerns were identified.</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Improvement Steps -->
+        <div class="dashboard-card" style="margin-bottom:16px;">
+            <h2 class="card-title" style="margin-bottom:12px;">Prioritised Improvement Steps</h2>
+            {% set steps = feedback.get('improvement_steps', []) %}
+            {% if steps %}
+            <ol class="practice-ordered-list">
+                {% for step in steps %}
+                <li>{{ step }}</li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="practice-empty-note">No specific improvement steps were provided.</p>
+            {% endif %}
+        </div>
+
+        <!-- Improved Example Response -->
+        <div class="dashboard-card" style="margin-bottom:16px;">
+            <h2 class="card-title" style="margin-bottom:12px;">Improved Example Response</h2>
+            {% set example = feedback.get('improved_example_response', '') %}
+            {% if example %}
+            <pre class="practice-example-response">{{ example }}</pre>
+            {% else %}
+            <p class="practice-empty-note">No example response was provided.</p>
+            {% endif %}
+        </div>
+
+        <!-- Expected Troubleshooting Checklist (from answer key — revealed post-grading) -->
+        <div class="dashboard-card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Expected Troubleshooting Checklist</h2>
+                    <p class="card-subtitle">Derived from the hidden answer key — revealed now that your attempt is graded</p>
+                </div>
+            </div>
+
+            {% if answer_key.get('required_troubleshooting_steps') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">Required Steps</h3>
+                <ul class="practice-list practice-list-blue">
+                    {% for step in answer_key['required_troubleshooting_steps'] %}
+                    <li>{{ step }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if answer_key.get('likely_causes') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">Likely Causes</h3>
+                <ul class="practice-list practice-list-blue">
+                    {% for cause in answer_key['likely_causes'] %}
+                    <li>{{ cause }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if answer_key.get('security_requirements') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">Security Requirements</h3>
+                <ul class="practice-list practice-list-orange">
+                    {% for req in answer_key['security_requirements'] %}
+                    <li>{{ req }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if answer_key.get('prohibited_actions') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">Prohibited Actions</h3>
+                <ul class="practice-list practice-list-red">
+                    {% for action in answer_key['prohibited_actions'] %}
+                    <li>{{ action }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if answer_key.get('escalation_conditions') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">When to Escalate</h3>
+                <ul class="practice-list practice-list-orange">
+                    {% for cond in answer_key['escalation_conditions'] %}
+                    <li>{{ cond }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% if answer_key.get('grading_notes') %}
+            <div class="practice-checklist-section">
+                <h3 class="practice-checklist-heading">Grader Notes</h3>
+                <p class="description-box" style="font-size:13px;color:#555;">{{ answer_key['grading_notes'] }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Cost & Token Usage -->
+        <div class="dashboard-card" style="margin-bottom:16px;">
+            <div class="card-header">
+                <h2 class="card-title">API Usage for This Session</h2>
+            </div>
+            <div class="practice-budget-grid">
+                <div class="practice-budget-item">
+                    <span class="practice-budget-label">Generation Cost</span>
+                    <span class="practice-budget-value">${{ "%.6f"|format(gen_cost) }}</span>
+                </div>
+                <div class="practice-budget-item">
+                    <span class="practice-budget-label">Grading Cost</span>
+                    <span class="practice-budget-value">${{ "%.6f"|format(grade_cost) }}</span>
+                </div>
+                <div class="practice-budget-item">
+                    <span class="practice-budget-label">Total for This Attempt</span>
+                    <span class="practice-budget-value">${{ "%.6f"|format(total_cost) }}</span>
+                </div>
+                <div class="practice-budget-item">
+                    <span class="practice-budget-label">Grading Input Tokens</span>
+                    <span class="practice-budget-value">{{ "{:,}".format(attempt['grading_input_tokens']) }}</span>
+                </div>
+                <div class="practice-budget-item">
+                    <span class="practice-budget-label">Grading Output Tokens</span>
+                    <span class="practice-budget-value">{{ "{:,}".format(attempt['grading_output_tokens']) }}</span>
+                </div>
+            </div>
+            <p class="practice-budget-note">
+                Cost estimates are based on configured token prices and calls recorded by this application.
+            </p>
+        </div>
+
+        <!-- AI Feedback Disclaimer -->
+        <div class="practice-disclaimer" style="margin-bottom:24px;">
+            <strong>Disclaimer:</strong> Scores and feedback are AI-generated by Claude for self-improvement practice only.
+            This is not a certification, professional assessment, or official evaluation.
+        </div>
+
+    </div>
+</div>
+{% endblock %}

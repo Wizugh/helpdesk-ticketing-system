@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}IT Practice Lab{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-content">
+
+        <!-- Page Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-header-left">
+                <span class="dashboard-eyebrow">ADMIN TOOL</span>
+                <h1 class="dashboard-title">IT Support Practice Lab</h1>
+                <p class="dashboard-subtitle">
+                    Generate a fictional IT support ticket, write your response, and receive AI-powered feedback scored on a 100-point rubric.
+                </p>
+            </div>
+            <div class="dashboard-header-right">
+                <a href="{{ url_for('admin') }}" class="btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="practice-disclaimer">
+            <strong>Note:</strong> Scores are AI-generated practice feedback for self-improvement only.
+            This is not a certification or official assessment. Practice data is kept separate from real helpdesk tickets.
+        </div>
+
+        <!-- API Key Warning -->
+        {% if not api_key_set %}
+        <div class="practice-api-warning">
+            <strong>API Key Not Configured</strong> — The Practice Lab requires an Anthropic API key.
+            Add <code>ANTHROPIC_API_KEY=your_key_here</code> to your <code>.env</code> file and restart the application.
+            The rest of the helpdesk continues to work normally without it.
+        </div>
+        {% endif %}
+
+        <div class="practice-main-grid">
+
+            <!-- Left: Generate Form + Budget -->
+            <div>
+
+                <!-- Generate Form -->
+                <div class="dashboard-card" style="margin-bottom:16px;">
+                    <div class="card-header">
+                        <h2 class="card-title">Generate Practice Ticket</h2>
+                    </div>
+                    <form method="POST" action="{{ url_for('practice_generate') }}" id="generate-form">
+                        <div class="practice-form-row">
+                            <div class="practice-form-group">
+                                <label for="category" class="practice-label">Category</label>
+                                <select name="category" id="category" class="practice-select">
+                                    {% for cat in categories %}
+                                    <option value="{{ cat }}">{{ cat }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="practice-form-group">
+                                <label for="difficulty" class="practice-label">Difficulty</label>
+                                <select name="difficulty" id="difficulty" class="practice-select">
+                                    {% for diff in difficulties %}
+                                    <option value="{{ diff }}">{{ diff }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn practice-generate-btn" id="generate-btn"
+                            {% if not api_key_set %}disabled title="API key not configured"{% endif %}>
+                            Generate Practice Ticket
+                        </button>
+                        <p class="practice-form-hint">
+                            Each generation uses one API call and counts toward your daily limit.
+                        </p>
+                    </form>
+                </div>
+
+                <!-- Budget & Usage Card -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title">API Usage & Budget</h2>
+                    </div>
+                    <div class="practice-budget-grid">
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Estimated Total Spend</span>
+                            <span class="practice-budget-value">${{ "%.6f"|format(usage_stats['total_cost']) }}</span>
+                        </div>
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Local Budget Configured</span>
+                            <span class="practice-budget-value">${{ "%.2f"|format(budget_usd) }}</span>
+                        </div>
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Estimated Remaining</span>
+                            <span class="practice-budget-value {% if budget_remaining < 0.50 %}practice-budget-low{% endif %}">
+                                ${{ "%.6f"|format(budget_remaining) }}
+                            </span>
+                        </div>
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Generation Cost</span>
+                            <span class="practice-budget-value">${{ "%.6f"|format(usage_stats['generation_cost']) }}</span>
+                        </div>
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Grading Cost</span>
+                            <span class="practice-budget-value">${{ "%.6f"|format(usage_stats['grading_cost']) }}</span>
+                        </div>
+                        <div class="practice-budget-item">
+                            <span class="practice-budget-label">Total Input Tokens</span>
+                            <span class="practice-budget-value">{{ "{:,}".format(usage_stats['total_input_tokens']) }}</span>
+                        </div>
+                    </div>
+                    <p class="practice-budget-note">
+                        Estimates are based on calls recorded by this application and do not reflect your official Anthropic account balance.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Right: Your Stats -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Your Practice Stats</h2>
+                </div>
+                <div class="practice-stat-row">
+                    <div class="practice-stat-box">
+                        <div class="practice-stat-num">{{ attempt_stats['total_attempts'] or 0 }}</div>
+                        <div class="practice-stat-label">Total Attempts</div>
+                    </div>
+                    <div class="practice-stat-box">
+                        <div class="practice-stat-num">{{ "%.0f"|format(attempt_stats['avg_score'] or 0) }}</div>
+                        <div class="practice-stat-label">Average Score</div>
+                    </div>
+                    <div class="practice-stat-box">
+                        <div class="practice-stat-num">{{ attempt_stats['best_score'] or 0 }}</div>
+                        <div class="practice-stat-label">Best Score</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Attempt History -->
+        <div class="dashboard-card" style="margin-top:16px;">
+            <div class="card-header">
+                <h2 class="card-title">Recent Attempts</h2>
+                <span class="card-subtitle">Your last 20 graded practice sessions</span>
+            </div>
+
+            {% if attempts %}
+            <div class="table-scroll">
+                <table class="ticket-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Difficulty</th>
+                            <th scope="col">Score</th>
+                            <th scope="col">Grade</th>
+                            <th scope="col">Result</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in attempts %}
+                        <tr>
+                            <td class="ticket-title-cell">{{ a['title'] }}</td>
+                            <td><span class="badge badge-category">{{ a['category'] }}</span></td>
+                            <td><span class="badge badge-difficulty-{{ a['difficulty'].lower() }}">{{ a['difficulty'] }}</span></td>
+                            <td>
+                                <strong>{{ a['final_score'] }}</strong>/100
+                                {% if a['raw_score'] != a['final_score'] %}
+                                <span class="practice-capped-note">(raw: {{ a['raw_score'] }})</span>
+                                {% endif %}
+                            </td>
+                            <td><span class="practice-grade-badge grade-{{ a['letter_grade'].replace('+','plus').replace('-','minus') }}">{{ a['letter_grade'] }}</span></td>
+                            <td>
+                                {% if a['passed'] %}
+                                <span class="badge badge-status-resolved">Pass</span>
+                                {% else %}
+                                <span class="badge badge-status-closed">Fail</span>
+                                {% endif %}
+                            </td>
+                            <td class="ticket-date-cell">{{ a['submitted_at'][:16] }}</td>
+                            <td style="white-space:nowrap;">
+                                <a href="{{ url_for('practice_result', attempt_id=a['id']) }}" class="btn-view">View Result</a>
+                                <a href="{{ url_for('practice_scenario', scenario_id=a['scenario_id']) }}" class="btn-view" style="margin-left:4px;">Retry</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p class="empty-title">No attempts yet</p>
+                <p class="empty-sub">Generate a practice ticket above to get started.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    var form = document.getElementById('generate-form');
+    var btn  = document.getElementById('generate-btn');
+    if (form && btn && !btn.disabled) {
+        form.addEventListener('submit', function () {
+            btn.disabled = true;
+            btn.textContent = 'Generating…';
+        });
+    }
+})();
+</script>
+{% endblock %}
